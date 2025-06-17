@@ -1,107 +1,450 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Temp Number - Receive SMS Online</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      color: #333;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #2c3e50;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    main {
-      padding: 2rem;
-      max-width: 900px;
-      margin: auto;
-    }
-    h2 {
-      margin-top: 2rem;
-    }
-    .country-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 10px;
-      margin-top: 1rem;
-    }
-    .country {
-      background: white;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      text-align: center;
-      font-weight: bold;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Temp Number - Receive SMS Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .main-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .country-selector {
+            margin-bottom: 30px;
+        }
+
+        .country-selector h3 {
+            margin-bottom: 15px;
+            color: #444;
+            font-size: 1.3rem;
+        }
+
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .country-btn {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .country-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .country-btn.selected {
+            background: linear-gradient(45deg, #FF6B6B, #FF5252);
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .numbers-section {
+            margin-top: 30px;
+        }
+
+        .number-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .number-card:hover {
+            border-color: #4CAF50;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .number-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .number-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-busy {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .copy-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #0056b3;
+        }
+
+        .sms-messages {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .sms-item {
+            background: white;
+            border-left: 4px solid #4CAF50;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .sms-sender {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .sms-content {
+            color: #555;
+            line-height: 1.4;
+        }
+
+        .sms-time {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(108, 92, 231, 0.3);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .no-numbers {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .main-card {
+                padding: 20px;
+            }
+            
+            .country-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }
+            
+            .number-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
 </head>
 <body>
+    <div class="container">
+        <div class="header">
+            <h1>📱 Temp Number</h1>
+            <p>Receive SMS Online with Temporary Numbers</p>
+        </div>
 
-<header>
-  <h1>Temp Number - Receive SMS Online</h1>
-  <p>Choose your temporary number country</p>
-</header>
+        <div class="main-card">
+            <div class="country-selector">
+                <h3>🌍 Select Country</h3>
+                <div class="country-grid" id="countryGrid">
+                    <!-- Countries will be populated by JavaScript -->
+                </div>
+            </div>
 
-<main>
-  <h2>Available Countries</h2>
-  <div class="country-list">
-    <div class="country">United Kingdom</div>
-    <div class="country">United States</div>
-    <div class="country">Canada</div>
-    <div class="country">Poland</div>
-    <div class="country">Puerto Rico</div>
-    <div class="country">France</div>
-    <div class="country">Lithuania</div>
-    <div class="country">Estonia</div>
-    <div class="country">Netherlands</div>
-    <div class="country">Belgium</div>
-    <div class="country">Sweden</div>
-    <div class="country">Australia</div>
-    <div class="country">Timor Leste</div>
-    <div class="country">Finland</div>
-    <div class="country">Denmark</div>
-    <div class="country">Spain</div>
-    <div class="country">Russia</div>
-    <div class="country">Ukraine</div>
-    <div class="country">Romania</div>
-    <div class="country">Morocco</div>
-    <div class="country">Bulgaria</div>
-    <div class="country">Ireland</div>
-    <div class="country">Italy</div>
-    <div class="country">Czech</div>
-    <div class="country">Philippines</div>
-    <div class="country">Germany</div>
-    <div class="country">Indonesia</div>
-    <div class="country">Kazakhstan</div>
-    <div class="country">Malaysia</div>
-    <div class="country">Hong Kong</div>
-    <div class="country">Austria</div>
-    <div class="country">Latvia</div>
-    <div class="country">Portugal</div>
-    <div class="country">Brazil</div>
-    <div class="country">Croatia</div>
-    <div class="country">India</div>
-    <div class="country">Israel</div>
-    <div class="country">Mauritius</div>
-    <div class="country">Mexico</div>
-    <div class="country">Nigeria</div>
-    <div class="country">Serbia</div>
-    <div class="country">Thailand</div>
-    <div class="country">Slovenia</div>
-    <div class="country">Iceland</div>
-    <div class="country">Switzerland</div>
-    <div class="country">Vietnam</div>
-    <div class="country">Chile</div>
-    <div class="country">Myanmar</div>
-  </div>
-</main>
+            <button class="refresh-btn" onclick="loadNumbers()">🔄 Refresh Numbers</button>
 
+            <div class="numbers-section" id="numbersSection">
+                <div class="loading">Select a country to view available numbers...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const countries = [
+            { code: 'GB', name: 'United Kingdom', flag: '🇬🇧' },
+            { code: 'US', name: 'United States', flag: '🇺🇸' },
+            { code: 'CA', name: 'Canada', flag: '🇨🇦' },
+            { code: 'PL', name: 'Poland', flag: '🇵🇱' },
+            { code: 'PR', name: 'Puerto Rico', flag: '🇵🇷' },
+            { code: 'FR', name: 'France', flag: '🇫🇷' },
+            { code: 'LT', name: 'Lithuania', flag: '🇱🇹' },
+            { code: 'EE', name: 'Estonia', flag: '🇪🇪' },
+            { code: 'NL', name: 'Netherlands', flag: '🇳🇱' },
+            { code: 'BE', name: 'Belgium', flag: '🇧🇪' },
+            { code: 'SE', name: 'Sweden', flag: '🇸🇪' },
+            { code: 'AU', name: 'Australia', flag: '🇦🇺' },
+            { code: 'TL', name: 'Timor Leste', flag: '🇹🇱' },
+            { code: 'FI', name: 'Finland', flag: '🇫🇮' },
+            { code: 'DK', name: 'Denmark', flag: '🇩🇰' },
+            { code: 'ES', name: 'Spain', flag: '🇪🇸' },
+            { code: 'RU', name: 'Russia', flag: '🇷🇺' },
+            { code: 'UA', name: 'Ukraine', flag: '🇺🇦' },
+            { code: 'RO', name: 'Romania', flag: '🇷🇴' },
+            { code: 'MA', name: 'Morocco', flag: '🇲🇦' },
+            { code: 'BG', name: 'Bulgaria', flag: '🇧🇬' },
+            { code: 'IE', name: 'Ireland', flag: '🇮🇪' },
+            { code: 'IT', name: 'Italy', flag: '🇮🇹' },
+            { code: 'CZ', name: 'Czech Republic', flag: '🇨🇿' },
+            { code: 'PH', name: 'Philippines', flag: '🇵🇭' },
+            { code: 'DE', name: 'Germany', flag: '🇩🇪' },
+            { code: 'ID', name: 'Indonesia', flag: '🇮🇩' },
+            { code: 'KZ', name: 'Kazakhstan', flag: '🇰🇿' },
+            { code: 'MY', name: 'Malaysia', flag: '🇲🇾' },
+            { code: 'HK', name: 'Hong Kong', flag: '🇭🇰' },
+            { code: 'AT', name: 'Austria', flag: '🇦🇹' },
+            { code: 'LV', name: 'Latvia', flag: '🇱🇻' },
+            { code: 'PT', name: 'Portugal', flag: '🇵🇹' },
+            { code: 'BR', name: 'Brazil', flag: '🇧🇷' },
+            { code: 'HR', name: 'Croatia', flag: '🇭🇷' },
+            { code: 'IN', name: 'India', flag: '🇮🇳' },
+            { code: 'IL', name: 'Israel', flag: '🇮🇱' },
+            { code: 'MU', name: 'Mauritius', flag: '🇲🇺' },
+            { code: 'MX', name: 'Mexico', flag: '🇲🇽' },
+            { code: 'NG', name: 'Nigeria', flag: '🇳🇬' },
+            { code: 'RS', name: 'Serbia', flag: '🇷🇸' },
+            { code: 'TH', name: 'Thailand', flag: '🇹🇭' },
+            { code: 'SI', name: 'Slovenia', flag: '🇸🇮' },
+            { code: 'IS', name: 'Iceland', flag: '🇮🇸' },
+            { code: 'CH', name: 'Switzerland', flag: '🇨🇭' },
+            { code: 'VN', name: 'Vietnam', flag: '🇻🇳' },
+            { code: 'CL', name: 'Chile', flag: '🇨🇱' },
+            { code: 'MM', name: 'Myanmar', flag: '🇲🇲' }
+        ];
+
+        let selectedCountry = null;
+        let numbers = {};
+
+        // Sample data for demonstration
+        const sampleNumbers = {
+            'US': [
+                { number: '+1 234 567 8901', status: 'active', messages: [
+                    { sender: 'Google', content: 'Your verification code is: 123456', time: '2 min ago' },
+                    { sender: 'WhatsApp', content: 'Your WhatsApp code: 789123', time: '5 min ago' }
+                ]},
+                { number: '+1 234 567 8902', status: 'active', messages: [] }
+            ],
+            'GB': [
+                { number: '+44 20 1234 5678', status: 'active', messages: [
+                    { sender: 'Amazon', content: 'Your OTP is: 456789', time: '1 min ago' }
+                ]},
+                { number: '+44 20 1234 5679', status: 'busy', messages: [] }
+            ]
+        };
+
+        function initializeCountries() {
+            const countryGrid = document.getElementById('countryGrid');
+            
+            countries.forEach(country => {
+                const btn = document.createElement('button');
+                btn.className = 'country-btn';
+                btn.innerHTML = `${country.flag} ${country.name}`;
+                btn.onclick = () => selectCountry(country.code, btn);
+                countryGrid.appendChild(btn);
+            });
+        }
+
+        function selectCountry(countryCode, btnElement) {
+            // Remove previous selection
+            document.querySelectorAll('.country-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Select current country
+            btnElement.classList.add('selected');
+            selectedCountry = countryCode;
+            
+            loadNumbers();
+        }
+
+        function loadNumbers() {
+            const numbersSection = document.getElementById('numbersSection');
+            
+            if (!selectedCountry) {
+                numbersSection.innerHTML = '<div class="loading">Select a country to view available numbers...</div>';
+                return;
+            }
+
+            numbersSection.innerHTML = '<div class="loading">Loading numbers...</div>';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                const countryNumbers = sampleNumbers[selectedCountry] || [];
+                
+                if (countryNumbers.length === 0) {
+                    numbersSection.innerHTML = `
+                        <div class="no-numbers">
+                            <h3>No numbers available for this country yet</h3>
+                            <p>We're working on adding more numbers. Please check back later!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<h3>📞 Available Numbers</h3>';
+                
+                countryNumbers.forEach((numData, index) => {
+                    html += `
+                        <div class="number-card">
+                            <div class="number-display">${numData.number}</div>
+                            <div class="number-info">
+                                <span class="status-badge ${numData.status === 'active' ? 'status-active' : 'status-busy'}">
+                                    ${numData.status === 'active' ? '✅ Available' : '🔴 Busy'}
+                                </span>
+                                <button class="copy-btn" onclick="copyNumber('${numData.number}')">
+                                    📋 Copy Number
+                                </button>
+                            </div>
+                            
+                            ${numData.messages.length > 0 ? `
+                                <div class="sms-messages">
+                                    <h4>📨 Recent Messages:</h4>
+                                    ${numData.messages.map(msg => `
+                                        <div class="sms-item">
+                                            <div class="sms-sender">From: ${msg.sender}</div>
+                                            <div class="sms-content">${msg.content}</div>
+                                            <div class="sms-time">${msg.time}</div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            ` : '<p style="margin-top: 15px; color: #666; font-style: italic;">No messages received yet</p>'}
+                        </div>
+                    `;
+                });
+
+                numbersSection.innerHTML = html;
+            }, 1000);
+        }
+
+        function copyNumber(number) {
+            navigator.clipboard.writeText(number).then(() => {
+                // Show temporary feedback
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✅ Copied!';
+                btn.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#007bff';
+                }, 2000);
+            }).catch(() => {
+                alert('Number copied: ' + number);
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCountries();
+        });
+
+        // Auto-refresh messages every 30 seconds
+        setInterval(() => {
+            if (selectedCountry) {
+                loadNumbers();
+            }
+        }, 30000);
+    </script>
 </body>
 </html>
